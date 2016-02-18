@@ -1,5 +1,5 @@
 {
-  "name": "Socket.IO Data Charts",
+  "name": "socketio-data-charts",
   "version": "0.0.1",
   "description": "Socket.IO Data Charts",
   "dependencies": {
