@@ -1,0 +1,9 @@
+{
+  "name": "Socket.IO Data Charts",
+  "version": "0.0.1",
+  "description": "Socket.IO Data Charts",
+  "dependencies": {
+    "express": "^4.13.4",
+    "socket.io": "^1.4.5"
+  }
+}

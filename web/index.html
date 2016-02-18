@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO Data Charts</title>
+  </head>
+  <body>
+    <h3>Dash</h3>
+    <div id="ram_disp">RAM: /</div>
+    <canvas width="200px" height="100px" id="ram_widget"></canvas>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script>
+      var Dash_Widget_SemiCircle = function(canvas_id) {
+        var _self = this;
+        _self.max = 0;
+        _self.val = 0;
+        _self.canvas = document.getElementById(canvas_id);
+        _self.context = _self.canvas.getContext("2d");
+
+        _self.render = function(val) {
+          //_self.context.fillStyle = "#d5e6d3";
+          _self.context.clearRect(0,0,_self.canvas.width,_self.canvas.height);
+
+          var percent = 100;
+          if (_self.max>0) {
+            percent = ((100/_self.max)*val);
+            if (percent > 100) { percent = 100; }
+            if (percent < 0) { percent = 0; }
+          }
+          var mid_point = ((Math.PI/100)*percent);
+
+          _self.context.lineWidth = 2;
+          _self.context.strokeStyle = '#550000';
+
+          _self.context.beginPath();
+          _self.context.arc(100, 95, 90, Math.PI, Math.PI+mid_point, false);
+          _self.context.lineTo(100, 95);
+          _self.context.closePath();
+          _self.context.fillStyle = 'red';
+          _self.context.fill();
+          _self.context.stroke();
+
+          _self.context.beginPath();
+          _self.context.moveTo(100, 95);
+          _self.context.arc(100, 95, 90, Math.PI+mid_point, Math.PI*2, false);
+          _self.context.closePath();
+          _self.context.fillStyle = 'yellow';
+          _self.context.fill();
+          _self.context.stroke();
+
+
+        };
+        _self.setMax = function(val) {
+          if (_self.max != val) {
+            _self.max = val;
+            _self.render(_self.val);
+          }
+        };
+
+        _self.anim_timer = null;
+        _self.anim_pos = null;
+        _self.anim_step = 0;
+        _self.anim_steps = 10;
+        _self.anim_step_size = 0;
+
+        _self.setValue = function(val) {
+          if (_self.val != val) {
+            var old_val = _self.val;
+            _self.val = val;
+            //_self.render(_self.val);
+            clearInterval(_self.anim_timer);
+            if (_self.anim_pos == null) {
+              _self.anim_pos = old_val;
+            }
+            _self.anim_step = 1;
+            _self.anim_steps = 10;
+            _self.anim_step_size = (val-old_val)/_self.anim_steps;
+            _self.anim_timer = setInterval(function(){
+              if (_self.anim_step < _self.anim_steps) {
+                _self.anim_pos += _self.anim_step_size;
+                _self.anim_step++;
+                _self.render(_self.anim_pos);
+              } else {
+                _self.render(_self.val);
+                _self.anim_pos = null;
+                clearInterval(_self.anim_timer);
+              }
+
+            }, 10);
+
+          }
+        };
+      };
+
+      var socket = io();
+      var data = null;
+      socket.on('data', function(blob){
+        data = blob;
+        update();
+      });
+
+      var ram_widget = new Dash_Widget_SemiCircle('ram_widget');
+
+      var update = function() {
+        console.log(data);
+        jQuery('#ram_disp').html("RAM: " + data.ram_used + "/" + data.ram_avalible);
+        ram_widget.setMax(data.ram_avalible);
+        ram_widget.setValue(data.ram_used);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO Data Charts - Fiddle</title>
+  </head>
+  <body>
+    DASH FIDDLE
+    <button id="use_no_ram">Clear RAM</button>
+    <button id="use_256_ram">Increase ram usage by 256MB</button>
+    <button id="use_256_ram_reduce">Reduce ram usage by 256MB</button>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script>
+      var socket = io();
+      jQuery('#use_no_ram').click(function(){
+        socket.emit('use_no_ram');
+      });
+      jQuery('#use_256_ram').click(function(){
+        socket.emit('use_256_ram');
+      });
+      jQuery('#use_256_ram_reduce').click(function(){
+        socket.emit('use_256_ram_reduce');
+      });
+    </script>
+  </body>
+</html>
